@@ -1,6 +1,6 @@
-# MinePass for Minecraft Forge 1.8
+# MinePass for Minecraft Forge 1.7
 
-This mod provides MinePass functionality to forge editions of Minecraft 1.8
+This mod provides MinePass functionality to forge editions of Minecraft 1.7
 
 ## Download and Installation
 

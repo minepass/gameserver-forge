@@ -31,10 +31,10 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.world.WorldSettings;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.eventhandler.EventPriority;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 import net.minecraft.server.MinecraftServer;
 import net.minepass.api.gameserver.MPPlayer;
 import net.minepass.api.gameserver.MPWorldServer;
@@ -72,7 +72,7 @@ public class EventHandler {
             protected Map<UUID, String> getCurrentPlayers() {
                 HashMap<UUID, String> players = new HashMap<>(currentPlayers.size());
                 for (UUID id : currentPlayers.keySet()) {
-                    players.put(id, currentPlayers.get(id).getName());
+                    players.put(id, currentPlayers.get(id).getCommandSenderName());
                 }
                 return players;
             }
@@ -102,7 +102,7 @@ public class EventHandler {
             protected void warnPlayerPass(UUID playerId, String message) {
                 EntityPlayerMP p = currentPlayers.get(playerId);
                 if (p != null) {
-                    p.addChatComponentMessage(IChatComponent.Serializer.jsonToComponent(String.format(
+                    p.addChatComponentMessage(IChatComponent.Serializer.func_150699_a(String.format(
                             "[\"\",{\"text\":\"%s\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"}}]",
                             message.concat(" Click for your World Pass."),
                             minepass.getServer().join_url

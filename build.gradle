@@ -31,7 +31,7 @@ def loadForgeConfiguration() {
     project.ext.coreVersion = '1.0-SNAPSHOT'
     println "Forge MP-Core Version is set to ${project.coreVersion}"
 
-    project.ext['forgeVersion'] = hasProperty('forge') ? forge : '1.8-11.14.1.1334'
+    project.ext['forgeVersion'] = hasProperty('forge') ? forge : '1.7.10-10.13.2.1291'
     println "Forge Version is set to ${project.forgeVersion}"
 }
 
@@ -65,9 +65,9 @@ apply plugin: 'forge'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
-version = "0.18.1" + "-" + (System.getenv("BUILD_NUMBER") ?: "SNAPSHOT")
+version = "0.17.1" + "-" + (System.getenv("BUILD_NUMBER") ?: "SNAPSHOT")
 group = "net.minepass"
-archivesBaseName = "MinePass-Forge[1.8]"
+archivesBaseName = "MinePass-Forge[1.7]"
 
 minecraft {
     version = "${project.forgeVersion}"
@@ -95,24 +95,24 @@ dependencies {
 }
 
 processResources
-{
-    // this will ensure that this task is redone when the versions change.
-    inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
+        {
+            // this will ensure that this task is redone when the versions change.
+            inputs.property "version", project.version
+            inputs.property "mcversion", project.minecraft.version
 
-    // replace stuff in mcmod.info, nothing else
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-                
-        // replace version and mcversion
-        expand 'version':project.version, 'mcversion':project.minecraft.version
-    }
-        
-    // copy everything else, thats not the mcmod.info
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
-    }
-}
+            // replace stuff in mcmod.info, nothing else
+            from(sourceSets.main.resources.srcDirs) {
+                include 'mcmod.info'
+
+                // replace version and mcversion
+                expand 'version':project.version, 'mcversion':project.minecraft.version
+            }
+
+            // copy everything else, thats not the mcmod.info
+            from(sourceSets.main.resources.srcDirs) {
+                exclude 'mcmod.info'
+            }
+        }
 
 task extractCore(type: Copy) {
     from {  // use of closure defers evaluation until execution time
@@ -122,4 +122,3 @@ task extractCore(type: Copy) {
 }
 
 classes.dependsOn extractCore
-
