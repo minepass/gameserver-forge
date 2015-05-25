@@ -1,0 +1,125 @@
+/*
+ *  This file is part of MinePass, licensed under the MIT License (MIT).
+ *
+ *  Copyright (c) MinePass.net <http://www.minepass.net>
+ *
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  of this software and associated documentation files (the "Software"), to deal
+ *  in the Software without restriction, including without limitation the rights
+ *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  copies of the Software, and to permit persons to whom the Software is
+ *  furnished to do so, subject to the following conditions:
+ *
+ *  The above copyright notice and this permission notice shall be included in
+ *  all copies or substantial portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  THE SOFTWARE.
+ */
+
+loadForgeConfiguration()
+
+def loadForgeConfiguration() {
+    project.ext['forgeEnv'] = hasProperty('env') ? env : 'development'
+    println "Forge Environment is set to ${project.forgeEnv}"
+
+    project.ext.coreVersion = '1.0-SNAPSHOT'
+    println "Forge MP-Core Version is set to ${project.coreVersion}"
+
+    project.ext['forgeVersion'] = hasProperty('forge') ? forge : '1.8-11.14.1.1334'
+    println "Forge Version is set to ${project.forgeVersion}"
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "sonatype"
+        url = "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            name = "sonatype"
+            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+    }
+}
+
+apply plugin: 'forge'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+version = "0.18.1" + "-" + (System.getenv("BUILD_NUMBER") ?: "SNAPSHOT")
+group = "net.minepass"
+archivesBaseName = "MinePass-Forge[1.8]"
+
+minecraft {
+    version = "${project.forgeVersion}"
+    runDir = "run"
+    replace '@VERSION@', project.version
+}
+
+configurations {
+    minepass_core
+    compile {
+        extendsFrom minepass_core
+    }
+}
+
+dependencies {
+    if ( project.forgeEnv == 'core_dev' ) {
+        minepass_core(project(":minepass_core")) {
+            transitive = true
+        }
+    } else if ( project.forgeEnv == 'development' ) {
+        minepass_core group: 'net.minepass', name: 'minepass-gameserver', version: '1.0-SNAPSHOT', changing: true
+    } else if (project.forgeEnv == 'production') {
+        minepass_core files("minepass-gameserver-${project.coreVersion}.jar")
+    }
+}
+
+processResources
+{
+    // this will ensure that this task is redone when the versions change.
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    // replace stuff in mcmod.info, nothing else
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+                
+        // replace version and mcversion
+        expand 'version':project.version, 'mcversion':project.minecraft.version
+    }
+        
+    // copy everything else, thats not the mcmod.info
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
+
+task extractCore(type: Copy) {
+    from {  // use of closure defers evaluation until execution time
+        configurations.minepass_core.collect { zipTree(it) }
+    }
+    into "$buildDir/classes/main/"
+}
+
+classes.dependsOn extractCore
+

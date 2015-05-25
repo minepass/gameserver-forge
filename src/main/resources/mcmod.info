@@ -1,0 +1,16 @@
+[
+{
+  "modid": "minepass-forge",
+  "name": "MinePass",
+  "description": "MinePass Network Game Server",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "http://www.minepass.net",
+  "updateUrl": "",
+  "authorList": ["MinePass"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
