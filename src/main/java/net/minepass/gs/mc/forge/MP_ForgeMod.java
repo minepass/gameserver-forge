@@ -36,6 +36,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minepass.api.gameserver.MPAsciiArt;
+import net.minepass.api.gameserver.MPConfig;
 import net.minepass.api.gameserver.MPConfigException;
 import net.minepass.api.gameserver.MPStartupException;
 import net.minepass.api.gameserver.MPWorldServerDetails;
@@ -55,12 +56,10 @@ public class MP_ForgeMod {
     public Logger logger;
 
     private MinePassMC minepass;
+    private MPConfig mpconfig;
     private EventHandler eventHandler;
     private Thread syncThread;
     private Boolean debug;
-    private String api_host;
-    private String server_uuid;
-    private String server_secret;
 
 
     public MinePassMC getMinepass() {
@@ -77,9 +76,10 @@ public class MP_ForgeMod {
         config.load();
 
         this.debug = config.get(Configuration.CATEGORY_GENERAL, "debug_enabled", false).getBoolean();
-        this.api_host = config.get(Configuration.CATEGORY_GENERAL, "setup_api_host", "").getString();
-        this.server_uuid = config.get(Configuration.CATEGORY_GENERAL, "setup_server_id", "").getString();
-        this.server_secret = config.get(Configuration.CATEGORY_GENERAL, "setup_server_secret", "").getString();
+        this.mpconfig = new MPConfig();
+        mpconfig.api_host = config.get(Configuration.CATEGORY_GENERAL, "setup_api_host", "").getString();
+        mpconfig.server_uuid = config.get(Configuration.CATEGORY_GENERAL, "setup_server_id", "").getString();
+        mpconfig.server_secret = config.get(Configuration.CATEGORY_GENERAL, "setup_server_secret", "").getString();
 
         config.save();
 
@@ -116,6 +116,8 @@ public class MP_ForgeMod {
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         try {
+            mpconfig.variant = "ForgePlugin ".concat(MP_ForgeMod.VERSION);
+
             /**
              * The MinePass network stack is built upon SolidTX, an MIT licensed project
              * developed in collaboration with BinaryBabel OSS.
@@ -127,15 +129,14 @@ public class MP_ForgeMod {
              *   https://github.com/org-binbab/solid-tx
              *
              */
-            this.minepass = new MinePassMC(
-                    "ForgePlugin ".concat(MP_ForgeMod.VERSION), api_host, server_uuid, server_secret
-            );
+            this.minepass = new MinePassMC(mpconfig);
             minepass.setContext(this);
 
             logger.info("MinePass Core Version: " + minepass.getVersion());
-            logger.info("MinePass API Endpoint: " + api_host);
+            logger.info("MinePass API Endpoint: " + mpconfig.api_host);
             logger.info("MinePass World Server UUID: " + minepass.getServerUUID());
         } catch (MPConfigException e) {
+            e.printStackTrace();
             for (String x : MPAsciiArt.getNotice("Configuration Update Required")) {
                 logger.info(x);
             }
@@ -170,7 +171,11 @@ public class MP_ForgeMod {
 
             // Send server details.
             MPWorldServerDetails details = new MPWorldServerDetails();
-            details.game_version = MinecraftServer.getServer().getMinecraftVersion()
+            details.plugin_type = "mc-forge";
+            details.plugin_version = VERSION;
+            details.game_realm = "mc";
+            details.game_version = MinecraftServer.getServer().getMinecraftVersion();
+            details.game_version_raw = MinecraftServer.getServer().getMinecraftVersion()
                     + " / " + MinecraftForge.getBrandingVersion();
             for (ModContainer m : Loader.instance().getModList()) {
                 String mainClass = "";
