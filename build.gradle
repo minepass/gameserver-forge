@@ -28,11 +28,20 @@ def loadForgeConfiguration() {
     project.ext['forgeEnv'] = hasProperty('env') ? env : 'development'
     println "Forge Environment is set to ${project.forgeEnv}"
 
-    project.ext.coreVersion = '1.0-SNAPSHOT'
+    project.ext.coreVersion = '2.0-SNAPSHOT'
     println "Forge MP-Core Version is set to ${project.coreVersion}"
 
-    project.ext['forgeVersion'] = hasProperty('forge') ? forge : '1.8-11.14.1.1334'
-    println "Forge Version is set to ${project.forgeVersion}"
+    project.ext['mcTargetVersion'] = hasProperty('mctarget') ? mctarget : '1.8.9'
+    println "Forge Minecraft Target is set to ${project.mcTargetVersion}"
+
+    if ( project.mcTargetVersion == '1.8' ) {
+        project.ext['forgeVersion'] = hasProperty('forge') ? forge : '1.8-11.14.4.1563'
+        project.ext['forgeMapping'] = 'stable_18'
+    } else {
+        project.ext['forgeVersion'] = hasProperty('forge') ? forge : '1.8.9-11.15.1.1722'
+        project.ext['forgeMapping'] = 'stable_22'
+    }
+    println "Forge Version is set to ${project.forgeVersion} / ${project.forgeMapping}"
 }
 
 repositories {
@@ -56,23 +65,25 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
     }
 }
 
-apply plugin: 'forge'
+apply plugin: 'net.minecraftforge.gradle.forge'
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
-version = "0.18.1" + "-" + (System.getenv("BUILD_NUMBER") ?: "SNAPSHOT")
+version = "0.18.42" + "-" + (System.getenv("BUILD_NUMBER") ?: "SNAPSHOT")
 group = "net.minepass"
-archivesBaseName = "MinePass-Forge[1.8]"
+archivesBaseName = "MinePass-Forge[${project.mcTargetVersion}]"
 
 minecraft {
-    version = "${project.forgeVersion}"
     runDir = "run"
+    version = "${project.forgeVersion}"
+    mappings = "${project.forgeMapping}"
     replace '@VERSION@', project.version
+    replace '@MCVERSION@', project.mcTargetVersion
 }
 
 configurations {
@@ -88,7 +99,7 @@ dependencies {
             transitive = true
         }
     } else if ( project.forgeEnv == 'development' ) {
-        minepass_core group: 'net.minepass', name: 'minepass-gameserver', version: '1.0-SNAPSHOT', changing: true
+        minepass_core group: 'net.minepass', name: 'minepass-gameserver', version: "${project.coreVersion}", changing: true
     } else if (project.forgeEnv == 'production') {
         minepass_core files("minepass-gameserver-${project.coreVersion}.jar")
     }
@@ -103,11 +114,11 @@ processResources
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-                
+
         // replace version and mcversion
         expand 'version':project.version, 'mcversion':project.minecraft.version
     }
-        
+
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
@@ -123,3 +134,6 @@ task extractCore(type: Copy) {
 
 classes.dependsOn extractCore
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.12'
+}

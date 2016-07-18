@@ -24,8 +24,6 @@
 
 package net.minepass.gs.mc.forge;
 
-import com.google.common.collect.ImmutableList;
-import com.mojang.authlib.GameProfile;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
@@ -44,6 +42,8 @@ import net.minepass.gs.mc.MinePassMC;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class EventHandler {
 
@@ -72,13 +72,13 @@ public class EventHandler {
             protected Map<UUID, String> getCurrentPlayers() {
                 HashMap<UUID, String> players = new HashMap<>(currentPlayers.size());
                 for (UUID id : currentPlayers.keySet()) {
-                    players.put(id, currentPlayers.get(id).getName());
+                    players.put(id, currentPlayers.get(id).getDisplayNameString());
                 }
                 return players;
             }
 
             @Override
-            protected void updateAndReloadLocalWhitelist() {
+            protected void updateAndReloadLocalAuth() {
                 minepass.updateLocalWhitelist();
                 MinecraftServer.getServer().getConfigurationManager().loadWhiteList();
                 mod.logger.info("Whitelist updated");
@@ -122,19 +122,36 @@ public class EventHandler {
 
         if (player != null) {
             MPWorldServer server = minepass.getServer();
-            Integer minecraftGameMode;
+            WorldSettings.GameType minecraftGameMode = null;
+            Pattern privPattern = Pattern.compile("mc:(?<name>[a-z]+)");
 
-            // Determine mode.
-            switch (player.type) {
-                case "visitor":
-                    minecraftGameMode = server.lifecycle_visitor_mode;
-                    break;
-                default:
-                    minecraftGameMode = server.lifecycle_default_mode;
+            Matcher pm;
+            for (String p : player.privileges) {
+                pm = privPattern.matcher(p);
+                if (pm.find()) {
+                    switch (pm.group("name")) {
+                        case "survival":
+                            minecraftGameMode = WorldSettings.GameType.SURVIVAL;
+                            break;
+                        case "creative":
+                            minecraftGameMode = WorldSettings.GameType.CREATIVE;
+                            break;
+                        case "adventure":
+                            minecraftGameMode = WorldSettings.GameType.ADVENTURE;
+                            break;
+                        case "spectator":
+                            minecraftGameMode = WorldSettings.GameType.SPECTATOR;
+                            break;
+                    }
+                }
             }
 
-            if (minecraftGameMode > -1) {
-                forgePlayer.setGameType(WorldSettings.GameType.getByID(minecraftGameMode));
+            if (minecraftGameMode != null) {
+                if (!forgePlayer.theItemInWorldManager.getGameType().equals(minecraftGameMode)) {
+                    forgePlayer.setGameType(minecraftGameMode);
+                }
+            } else {
+                forgePlayer.playerNetServerHandler.kickPlayerFromServer("Your current MinePass does not permit access to this server.");
             }
         }
     }
