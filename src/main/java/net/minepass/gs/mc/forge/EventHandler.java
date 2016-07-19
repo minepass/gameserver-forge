@@ -26,14 +26,14 @@ package net.minepass.gs.mc.forge;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.WorldSettings;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraft.server.MinecraftServer;
 import net.minepass.api.gameserver.MPPlayer;
 import net.minepass.api.gameserver.MPWorldServer;
 import net.minepass.gs.GameserverTasks;
@@ -80,21 +80,21 @@ public class EventHandler {
             @Override
             protected void updateAndReloadLocalAuth() {
                 minepass.updateLocalWhitelist();
-                MinecraftServer.getServer().getConfigurationManager().loadWhiteList();
+                FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().reloadWhitelist();
                 mod.logger.info("Whitelist updated");
             }
 
             @Override
             protected void kickPlayer(UUID playerId, String message) {
                 EntityPlayerMP p = currentPlayers.get(playerId);
-                if (p != null) p.playerNetServerHandler.kickPlayerFromServer(message);
+                if (p != null) p.connection.kickPlayerFromServer(message);
             }
 
             @Override
             protected void warnPlayer(UUID playerId, String message) {
                 EntityPlayerMP p = currentPlayers.get(playerId);
                 if (p != null) {
-                    p.addChatComponentMessage(new ChatComponentText(ChatFormatting.GOLD + message));
+                    p.addChatComponentMessage(new TextComponentString(ChatFormatting.GOLD + message));
                 }
             }
 
@@ -102,7 +102,7 @@ public class EventHandler {
             protected void warnPlayerPass(UUID playerId, String message) {
                 EntityPlayerMP p = currentPlayers.get(playerId);
                 if (p != null) {
-                    p.addChatComponentMessage(IChatComponent.Serializer.jsonToComponent(String.format(
+                    p.addChatComponentMessage(ITextComponent.Serializer.jsonToComponent(String.format(
                             "[\"\",{\"text\":\"%s\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"}}]",
                             message.concat(" Click for your World Pass."),
                             minepass.getServer().join_url
@@ -147,11 +147,9 @@ public class EventHandler {
             }
 
             if (minecraftGameMode != null) {
-                if (!forgePlayer.theItemInWorldManager.getGameType().equals(minecraftGameMode)) {
-                    forgePlayer.setGameType(minecraftGameMode);
-                }
+                forgePlayer.setGameType(minecraftGameMode);
             } else {
-                forgePlayer.playerNetServerHandler.kickPlayerFromServer("Your current MinePass does not permit access to this server.");
+                forgePlayer.connection.kickPlayerFromServer("Your current MinePass does not permit access to this server.");
             }
         }
     }

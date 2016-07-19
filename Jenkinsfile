@@ -7,7 +7,7 @@ node {
   stage 'Setup'
   sh "./gradlew clean"
 
-  def versions = ['1.8', '1.8.9']
+  def versions = ['1.9', '1.9.4']
   for (v in versions) {
     stage "Build ${v}"
     sh "./gradlew build -Penv=production -Pmctarget=${v} -PBUILD_NUMBER=${env.BUILD_NUMBER}"

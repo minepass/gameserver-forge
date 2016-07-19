@@ -31,15 +31,15 @@ def loadForgeConfiguration() {
     project.ext.coreVersion = '2.0-SNAPSHOT'
     println "Forge MP-Core Version is set to ${project.coreVersion}"
 
-    project.ext['mcTargetVersion'] = hasProperty('mctarget') ? mctarget : '1.8.9'
+    project.ext['mcTargetVersion'] = hasProperty('mctarget') ? mctarget : '1.9.4'
     println "Forge Minecraft Target is set to ${project.mcTargetVersion}"
 
-    if ( project.mcTargetVersion == '1.8' ) {
-        project.ext['forgeVersion'] = hasProperty('forge') ? forge : '1.8-11.14.4.1563'
-        project.ext['forgeMapping'] = 'stable_18'
+    if ( project.mcTargetVersion == '1.9' ) {
+        project.ext['forgeVersion'] = hasProperty('forge') ? forge : '1.9-12.16.1.1887'
+        project.ext['forgeMapping'] = 'stable_24'
     } else {
-        project.ext['forgeVersion'] = hasProperty('forge') ? forge : '1.8.9-11.15.1.1722'
-        project.ext['forgeMapping'] = 'stable_22'
+        project.ext['forgeVersion'] = hasProperty('forge') ? forge : '1.9.4-12.17.0.1976'
+        project.ext['forgeMapping'] = 'stable_26'
     }
     println "Forge Version is set to ${project.forgeVersion} / ${project.forgeMapping}"
 }
@@ -74,7 +74,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-version = "0.18.42" + "-" + (System.getenv("BUILD_NUMBER") ?: "SNAPSHOT")
+version = "0.19.42" + "-" + (System.getenv("BUILD_NUMBER") ?: "SNAPSHOT")
 group = "net.minepass"
 archivesBaseName = "MinePass-Forge[${project.mcTargetVersion}]"
 
