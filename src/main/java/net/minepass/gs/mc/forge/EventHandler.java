@@ -28,7 +28,7 @@ import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.WorldSettings;
+import net.minecraft.world.GameType;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -122,7 +122,7 @@ public class EventHandler {
 
         if (player != null) {
             MPWorldServer server = minepass.getServer();
-            WorldSettings.GameType minecraftGameMode = null;
+            GameType minecraftGameMode = null;
             Pattern privPattern = Pattern.compile("mc:(?<name>[a-z]+)");
 
             Matcher pm;
@@ -131,16 +131,16 @@ public class EventHandler {
                 if (pm.find()) {
                     switch (pm.group("name")) {
                         case "survival":
-                            minecraftGameMode = WorldSettings.GameType.SURVIVAL;
+                            minecraftGameMode = GameType.SURVIVAL;
                             break;
                         case "creative":
-                            minecraftGameMode = WorldSettings.GameType.CREATIVE;
+                            minecraftGameMode = GameType.CREATIVE;
                             break;
                         case "adventure":
-                            minecraftGameMode = WorldSettings.GameType.ADVENTURE;
+                            minecraftGameMode = GameType.ADVENTURE;
                             break;
                         case "spectator":
-                            minecraftGameMode = WorldSettings.GameType.SPECTATOR;
+                            minecraftGameMode = GameType.SPECTATOR;
                             break;
                     }
                 }
