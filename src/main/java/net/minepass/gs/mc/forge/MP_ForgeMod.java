@@ -158,7 +158,7 @@ public class MP_ForgeMod {
 
     @Mod.EventHandler
     public void postStart(FMLServerStartedEvent event) {
-        MinecraftServer minecraftServer = FMLCommonHandler.instance().getMinecraftServerInstance();
+        MinecraftServer minecraftServer = getMinecraftServer();
         if (minepass != null && minepass.getServer() != null) {
             logger.info("Requiring whitelist enabled.");
             minecraftServer.getPlayerList().reloadWhitelist();
@@ -203,5 +203,9 @@ public class MP_ForgeMod {
         if (syncThread != null) {
             syncThread.interrupt();
         }
+    }
+
+    public MinecraftServer getMinecraftServer() {
+        return FMLCommonHandler.instance().getMinecraftServerInstance();
     }
 }
