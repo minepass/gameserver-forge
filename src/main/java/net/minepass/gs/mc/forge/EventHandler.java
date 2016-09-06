@@ -130,6 +130,9 @@ public class EventHandler {
                 pm = privPattern.matcher(p);
                 if (pm.find()) {
                     switch (pm.group("name")) {
+                        case "default":
+                            minecraftGameMode = GameType.NOT_SET;
+                            break;
                         case "survival":
                             minecraftGameMode = GameType.SURVIVAL;
                             break;
@@ -147,7 +150,9 @@ public class EventHandler {
             }
 
             if (minecraftGameMode != null) {
-                forgePlayer.setGameType(minecraftGameMode);
+                if (minecraftGameMode != GameType.NOT_SET) {
+                    forgePlayer.setGameType(minecraftGameMode);
+                }
             } else {
                 forgePlayer.connection.kickPlayerFromServer("Your current MinePass does not permit access to this server.");
             }
