@@ -80,7 +80,7 @@ public class EventHandler {
             @Override
             protected void updateAndReloadLocalAuth() {
                 minepass.updateLocalWhitelist();
-                FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().reloadWhitelist();
+                mod.getMinecraftServer().getPlayerList().reloadWhitelist();
                 mod.logger.info("Whitelist updated");
             }
 
