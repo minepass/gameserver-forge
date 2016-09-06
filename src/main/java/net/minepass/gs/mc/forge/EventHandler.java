@@ -33,7 +33,6 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraft.server.MinecraftServer;
 import net.minepass.api.gameserver.MPPlayer;
 import net.minepass.api.gameserver.MPWorldServer;
 import net.minepass.gs.GameserverTasks;
@@ -80,7 +79,7 @@ public class EventHandler {
             @Override
             protected void updateAndReloadLocalAuth() {
                 minepass.updateLocalWhitelist();
-                MinecraftServer.getServer().getConfigurationManager().loadWhiteList();
+                mod.getMinecraftServer().getServer().getConfigurationManager().loadWhiteList();
                 mod.logger.info("Whitelist updated");
             }
 

@@ -158,10 +158,11 @@ public class MP_ForgeMod {
 
     @Mod.EventHandler
     public void postStart(FMLServerStartedEvent event) {
+        MinecraftServer minecraftServer = getMinecraftServer();
         if (minepass != null && minepass.getServer() != null) {
             logger.info("Requiring whitelist enabled.");
-            MinecraftServer.getServer().getConfigurationManager().loadWhiteList();
-            MinecraftServer.getServer().getConfigurationManager().setWhiteListEnabled(true);
+            minecraftServer.getConfigurationManager().loadWhiteList();
+            minecraftServer.getConfigurationManager().setWhiteListEnabled(true);
 
             // Start sync thread.
             syncThread = new Thread(new TxSync(minepass, 10));
@@ -176,8 +177,8 @@ public class MP_ForgeMod {
             details.plugin_type = "mc-forge";
             details.plugin_version = VERSION;
             details.game_realm = "mc";
-            details.game_version = MinecraftServer.getServer().getMinecraftVersion();
-            details.game_version_raw = MinecraftServer.getServer().getMinecraftVersion()
+            details.game_version = minecraftServer.getMinecraftVersion();
+            details.game_version_raw = minecraftServer.getMinecraftVersion()
                     + " / Minecraft Forge " + ForgeVersion.getVersion();
             for (ModContainer m : Loader.instance().getModList()) {
                 String mainClass = "";
@@ -192,7 +193,7 @@ public class MP_ForgeMod {
             minepass.sendObject(details, null);
         } else {
             logger.warn("MinePass shutting down server due to missing configuration.");
-            MinecraftServer.getServer().initiateShutdown();
+            minecraftServer.initiateShutdown();
         }
     }
 
@@ -202,5 +203,9 @@ public class MP_ForgeMod {
         if (syncThread != null) {
             syncThread.interrupt();
         }
+    }
+
+    public MinecraftServer getMinecraftServer() {
+        return MinecraftServer.getServer();
     }
 }
