@@ -35,7 +35,6 @@ import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import net.minecraft.server.MinecraftServer;
 import net.minepass.api.gameserver.MPPlayer;
-import net.minepass.api.gameserver.MPWorldServer;
 import net.minepass.gs.GameserverTasks;
 import net.minepass.gs.mc.MinePassMC;
 
@@ -121,14 +120,15 @@ public class EventHandler {
         currentPlayers.put(playerUUID, forgePlayer);
 
         if (player != null) {
-            MPWorldServer server = minepass.getServer();
             WorldSettings.GameType minecraftGameMode = null;
             Pattern privPattern = Pattern.compile("mc:(?<name>[a-z]+)");
+            Pattern commandPattern = Pattern.compile("mc:/(?<command>.+)");
 
             Matcher pm;
             for (String p : player.privileges) {
-                pm = privPattern.matcher(p);
-                if (pm.find()) {
+                if ((pm = privPattern.matcher(p)).find()) {
+                    // Standard privileges.
+                    //
                     switch (pm.group("name")) {
                         case "default":
                             minecraftGameMode = WorldSettings.GameType.NOT_SET;
@@ -143,6 +143,17 @@ public class EventHandler {
                             minecraftGameMode = WorldSettings.GameType.ADVENTURE;
                             break;
                     }
+                } else if ((pm = commandPattern.matcher(p)).find()) {
+                    // Command privileges.
+                    //
+                    String command = pm.group("command");
+                    command = command.replaceAll("\\$name", player.name);
+                    command = command.replaceAll("\\$uuid", playerUUID.toString());
+                    minepass.log.debug("Sending login command: ".concat(command), this);
+                    mod.getMinecraftServer().getCommandManager().executeCommand(
+                            mod.getMinecraftServer(),
+                            command
+                    );
                 }
             }
 
