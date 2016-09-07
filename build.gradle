@@ -65,7 +65,7 @@ apply plugin: 'forge'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-version = "0.17.42" + "-" + (System.getenv("BUILD_NUMBER") ?: "SNAPSHOT")
+version = "0.17.44" + "-" + (System.getenv("BUILD_NUMBER") ?: "SNAPSHOT")
 group = "net.minepass"
 archivesBaseName = "MinePass-Forge[1.7]"
 
