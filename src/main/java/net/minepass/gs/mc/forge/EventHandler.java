@@ -103,7 +103,7 @@ public class EventHandler {
                 if (p != null) {
                     p.addChatComponentMessage(IChatComponent.Serializer.func_150699_a(String.format(
                             "[\"\",{\"text\":\"%s\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"}}]",
-                            message.concat(" Click for your World Pass."),
+                            message.concat(" Click to get your MinePass."),
                             minepass.getServer().join_url
                     )));
                 }
