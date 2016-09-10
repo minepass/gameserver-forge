@@ -69,7 +69,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-version = "0.20.44" + "-" + (System.getenv("BUILD_NUMBER") ?: "SNAPSHOT")
+version = "0.20.45" + "-" + (System.getenv("BUILD_NUMBER") ?: "SNAPSHOT")
 group = "net.minepass"
 archivesBaseName = "MinePass-Forge[${project.mcTargetVersion}]"
 
