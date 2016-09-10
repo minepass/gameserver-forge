@@ -102,7 +102,12 @@ public class EventHandler {
                 if (p != null) {
                     p.addChatComponentMessage(IChatComponent.Serializer.jsonToComponent(String.format(
                             "[\"\",{\"text\":\"%s\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"}}]",
-                            message.concat(" Click to get your MinePass."),
+                            message,
+                            minepass.getServer().join_url
+                    )));
+                    p.addChatComponentMessage(IChatComponent.Serializer.jsonToComponent(String.format(
+                            "[\"\",{\"text\":\"%s\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"}}]",
+                            "Press '/' then click this message to get your MinePass.",
                             minepass.getServer().join_url
                     )));
                 }

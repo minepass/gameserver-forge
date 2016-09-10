@@ -79,6 +79,7 @@ public class MP_ForgeMod {
 
         this.debug = config.get(Configuration.CATEGORY_GENERAL, "debug_enabled", false).getBoolean();
         this.mpconfig = new MPConfig();
+        mpconfig.enforce_whitelist = config.get(Configuration.CATEGORY_GENERAL, "enforce_whitelist", true).getBoolean();
         mpconfig.api_host = config.get(Configuration.CATEGORY_GENERAL, "setup_api_host", "").getString();
         mpconfig.server_uuid = config.get(Configuration.CATEGORY_GENERAL, "setup_server_id", "").getString();
         mpconfig.server_secret = config.get(Configuration.CATEGORY_GENERAL, "setup_server_secret", "").getString();
@@ -160,9 +161,23 @@ public class MP_ForgeMod {
     public void postStart(FMLServerStartedEvent event) {
         MinecraftServer minecraftServer = getMinecraftServer();
         if (minepass != null && minepass.getServer() != null) {
-            logger.info("Requiring whitelist enabled.");
             minecraftServer.getConfigurationManager().loadWhiteList();
-            minecraftServer.getConfigurationManager().setWhiteListEnabled(true);
+
+            // Whitelist mode.
+            if (minepass.getEnforceWhitelist()) {
+                logger.info("Requiring whitelist enabled", this);
+                minecraftServer.getConfigurationManager().setWhiteListEnabled(true);
+            } else {
+                logger.warn("|     .^.                                             .^.     |", this);
+                logger.warn("|    / ! \\            WHITELIST DISABLED             / ! \\    |", this);
+                logger.warn("|   '-----'                                         '-----'   |", this);
+                logger.warn("MinePass option [enforce_whitelist]=false", this);
+                logger.warn("This server will be OPEN to unregistered visitors.", this);
+                logger.warn("MinePass can only manage privileges of registered players.", this);
+                logger.warn("If you are trying to accommodate existing players,", this);
+                logger.warn("  consider using the Import/Bypass feature of the web-portal.", this);
+                minecraftServer.getConfigurationManager().setWhiteListEnabled(false);
+            }
 
             // Start sync thread.
             syncThread = new Thread(new TxSync(minepass, 10));
