@@ -79,7 +79,7 @@ public class EventHandler {
             protected void updateAndReloadLocalAuth() {
                 minepass.updateLocalWhitelist();
                 mod.getMinecraftServer().getServer().getConfigurationManager().loadWhiteList();
-                mod.logger.info("Whitelist updated");
+                mod.logger.info("MinePass Synchronized");
             }
 
             @Override
