@@ -34,8 +34,8 @@ def loadForgeConfiguration() {
     project.ext['mcTargetVersion'] = hasProperty('mctarget') ? mctarget : '1.10.2'
     println "Forge Minecraft Target is set to ${project.mcTargetVersion}"
 
-    project.ext['forgeVersion'] = hasProperty('forge') ? forge : '1.10.2-12.18.1.2011'
-    project.ext['forgeMapping'] = 'snapshot_20160719'
+    project.ext['forgeVersion'] = hasProperty('forge') ? forge : '1.10.2-12.18.2.2099'
+    project.ext['forgeMapping'] = 'stable_29' /* http://export.mcpbot.bspk.rs/ */
     println "Forge Version is set to ${project.forgeVersion} / ${project.forgeMapping}"
 }
 
@@ -60,7 +60,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT' /* http://files.minecraftforge.net/FG/ */
     }
 }
 

@@ -85,14 +85,14 @@ public class EventHandler {
             @Override
             protected void kickPlayer(UUID playerId, String message) {
                 EntityPlayerMP p = currentPlayers.get(playerId);
-                if (p != null) p.connection.kickPlayerFromServer(message);
+                if (p != null) p.connection.disconnect(message);
             }
 
             @Override
             protected void warnPlayer(UUID playerId, String message) {
                 EntityPlayerMP p = currentPlayers.get(playerId);
                 if (p != null) {
-                    p.addChatComponentMessage(new TextComponentString(ChatFormatting.GOLD + message));
+                    p.sendMessage(new TextComponentString(ChatFormatting.GOLD + message));
                 }
             }
 
@@ -100,12 +100,12 @@ public class EventHandler {
             protected void warnPlayerPass(UUID playerId, String message) {
                 EntityPlayerMP p = currentPlayers.get(playerId);
                 if (p != null) {
-                    p.addChatComponentMessage(ITextComponent.Serializer.jsonToComponent(String.format(
+                    p.sendMessage(ITextComponent.Serializer.jsonToComponent(String.format(
                             "[\"\",{\"text\":\"%s\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"}}]",
                             message,
                             minepass.getServer().join_url
                     )));
-                    p.addChatComponentMessage(ITextComponent.Serializer.jsonToComponent(String.format(
+                    p.sendMessage(ITextComponent.Serializer.jsonToComponent(String.format(
                             "[\"\",{\"text\":\"%s\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"%s\"}}]",
                             "Press '/' then click this message to get your MinePass.",
                             minepass.getServer().join_url
@@ -169,7 +169,7 @@ public class EventHandler {
                     forgePlayer.setGameType(minecraftGameMode);
                 }
             } else {
-                forgePlayer.connection.kickPlayerFromServer("Your current MinePass does not permit access to this server.");
+                forgePlayer.connection.disconnect("Your current MinePass does not permit access to this server.");
             }
         }
     }
