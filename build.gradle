@@ -34,8 +34,13 @@ def loadForgeConfiguration() {
     project.ext['mcTargetVersion'] = hasProperty('mctarget') ? mctarget : '1.10.2'
     println "Forge Minecraft Target is set to ${project.mcTargetVersion}"
 
-    project.ext['forgeVersion'] = hasProperty('forge') ? forge : '1.10.2-12.18.2.2099'
-    project.ext['forgeMapping'] = 'stable_29' /* http://export.mcpbot.bspk.rs/ */
+    if ( project.mcTargetVersion == '1.10.2' ) {
+        project.ext['forgeVersion'] = hasProperty('forge') ? forge : '1.10.2-12.18.2.2099'
+        project.ext['forgeMapping'] = 'stable_29' /* http://export.mcpbot.bspk.rs/ */
+    } else {
+        project.ext['forgeVersion'] = hasProperty('forge') ? forge : "https://lv.binarybabel.org/catalog/minecraft_forge/latest.txt?p=version".toURL().getText()
+        project.ext['forgeMapping'] = "https://lv.binarybabel.org/catalog/modcoderpack/latest.txt?p=version".toURL().getText()
+    }
     println "Forge Version is set to ${project.forgeVersion} / ${project.forgeMapping}"
 }
 
