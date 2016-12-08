@@ -1,0 +1,12 @@
+language: java
+jdk:
+- oraclejdk8
+before_install:
+  - curl -O https://s3.amazonaws.com/minepass-artifacts/latest/minepass-gameserver-2.0-SNAPSHOT.jar
+addons:
+  artifacts:
+    paths:
+    - $(ls ./build/libs/*.jar | grep -v sources | tr "\n" ":")
+env:
+  - ORG_GRADLE_PROJECT_mctarget=1.11
+  - ORG_GRADLE_PROJECT_mctarget=1.10.2
