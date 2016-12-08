@@ -25,7 +25,7 @@
 loadForgeConfiguration()
 
 def loadForgeConfiguration() {
-    project.ext['forgeEnv'] = hasProperty('env') ? env : 'development'
+    project.ext['forgeEnv'] = hasProperty('env') ? env : 'production'
     println "Forge Environment is set to ${project.forgeEnv}"
 
     project.ext.coreVersion = '2.0-SNAPSHOT'
@@ -65,7 +65,7 @@ apply plugin: 'forge'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-version = "0.17.46" + "-" + (System.getenv("BUILD_NUMBER") ?: "SNAPSHOT")
+version = "0.17.46" + "-" + (System.getenv("TRAVIS_BUILD_NUMBER") ?: "SNAPSHOT")
 group = "net.minepass"
 archivesBaseName = "MinePass-Forge[1.7.10]"
 
@@ -83,12 +83,10 @@ configurations {
 }
 
 dependencies {
-    if ( project.forgeEnv == 'core_dev' ) {
+    if ( project.forgeEnv == 'development' ) {
         minepass_core(project(":minepass_core")) {
             transitive = true
         }
-    } else if ( project.forgeEnv == 'development' ) {
-        minepass_core group: 'net.minepass', name: 'minepass-gameserver', version: "${project.coreVersion}", changing: true
     } else if (project.forgeEnv == 'production') {
         minepass_core files("minepass-gameserver-${project.coreVersion}.jar")
     }

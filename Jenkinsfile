@@ -1,3 +1,5 @@
+/* IMPORTANT: This file is deprecated in favor of .travis.yml */
+
 node {
   stage 'Checkout'
   echo "Branch is: ${env.BRANCH_NAME}"
